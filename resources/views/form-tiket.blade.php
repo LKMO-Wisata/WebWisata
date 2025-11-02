@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form pemesanan|watersplash park</title>
+    <title>Form pemesanan | Watersplash Park</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
 
     @include('layouts.navbar')
@@ -12,19 +12,16 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* Mengatasi 'flash' saat Alpine.js dimuat */
         [x-cloak] {
             display: none !important;
         }
-        
-        /* Hapus 'spinner' default di input[type=number] */
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
         input[type=number] {
-            -moz-appearance: textfield; /* Firefox */
+            -moz-appearance: textfield;
         }
     </style>
 </head>
@@ -65,6 +62,9 @@
                 <form @submit.prevent="submitPayment" class="space-y-8">
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Informasi Pesanan</h3>
+
+                        <!-- TANGGAL KUNJUNGAN SUDAH DIHAPUS -->
+
                         <div class="mb-6">
                             <label for="nama" class="block text-sm font-medium text-gray-600">Nama</label>
                             <input type="text" id="nama" name="nama" class="block w-full py-2 border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-indigo-700 transition-colors" required>
@@ -99,7 +99,7 @@
                                     <p x-show="!selectedPayment" class="font-semibold text-gray-900">Pilih Metode Pembayaran</p>
                                     <p x-show="selectedPayment" x-cloak class="font-semibold text-gray-900">
                                         <span x-text="selectedPayment.name"></span>
-                                        </p>
+                                    </p>
                                 </div>
                             </div>
                             <svg x-show="!isPaymentOpen" class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -124,13 +124,12 @@
                                         <img :src="method.logoUrl" class="h-8 mx-auto mb-3 object-contain" alt="">
                                         <p class="font-semibold text-gray-900">
                                             <span x-text="method.name"></span>
-                                            </p>
+                                        </p>
                                         <p class="text-sm text-gray-600 mt-1" x-text="method.description"></p>
                                     </div>
                                 </template>
                             </div>
-
-                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-8">
@@ -170,7 +169,7 @@
                                 </span>
                                 <p class="font-semibold">Tiket Masuk Watersplash Park</p>
                                 <p class="text-sm text-gray-600">
-                                    <span x-text="order.tanggalFormatted"></span>, Total: <span x-text="item.quantity"></span>
+                                    Total: <span x-text="item.quantity"></span>
                                 </p>
                             </div>
                             <span class="font-bold text-gray-900" x-text="formatCurrency(item.price * item.quantity)"></span>
@@ -287,7 +286,7 @@
     }
     </script>
 
-    @include('layouts.footer')  
+    @include('layouts.footer')  
 
 </body>
 </html>
