@@ -8,14 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Style tambahan jika diperlukan */
     </style>
 </head>
 <body class="bg-white font-sans text-gray-900">
 
     @include('layouts.navbar')
 
-    {{-- ===== Banner Wahana ===== --}}
     <div class="relative h-[60vh] md:h-[70vh] bg-cover bg-center" style="background-image: url('{{ asset($wahana['gambar']) }}');">
         <div class="absolute inset-0 bg-black bg-opacity-30"></div>
         <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-gradient-to-t from-black via-black/70 to-transparent">
@@ -23,10 +21,9 @@
         </div>
     </div>
 
-    {{-- ===== Detail Konten ===== --}}
     <section class="container mx-auto px-4 py-12 md:py-16">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {{-- Kolom Kiri: Ketentuan & Tombol --}}
+            
             <div class="md:col-span-1 space-y-6">
                 <h2 class="text-xl font-semibold text-[#001B60] border-b pb-2">Ketentuan :</h2>
                 <ul class="space-y-2 text-sm text-gray-700">
@@ -48,7 +45,6 @@
                 </a>
             </div>
 
-            {{-- Kolom Kanan: Deskripsi Wahana --}}
             <div class="md:col-span-2">
                 <h2 class="text-2xl font-bold text-[#001B60] mb-4">{{ $wahana['nama'] }}</h2>
                 <p class="text-gray-600 leading-relaxed text-justify">
@@ -58,11 +54,7 @@
         </div>
     </section>
 
-    {{--
-    ===================================================
-    BAGIAN JELAJAHI WAHANA LAINNYA (Slider JS)
-    ===================================================
-    --}}
+
     @if(isset($others) && count($others) > 0)
         @php
             $wahanaSliderItems = $others;
@@ -92,7 +84,7 @@
             </div>
         </section>
     @else
-        {{-- Tampilan jika $others kosong --}}
+   
         <section class="bg-gray-100 py-16">
              <div class="container mx-auto px-4">
                  <h2 class="text-2xl font-bold text-center text-[#001B60] mb-10">Jelajahi Wahana Lainnya</h2>
@@ -100,36 +92,32 @@
              </div>
          </section>
     @endif
-    {{-- =================================================== --}}
 
     @include('layouts.footer')
 
-    {{-- ✅ SCRIPT DIPINDAH KE BAWAH SEBELUM </body> --}}
     @if(isset($others) && count($others) > 0)
         <script>
-            // Data PHP di-pass ke JS
+
             const wahanaItemsOther = @json($wahanaSliderItems);
             const itemsPerSlideOther = {{ $itemsPerSlide }};
             const totalSlidesOther = Math.ceil(wahanaItemsOther.length / itemsPerSlideOther);
             let currentSlideOther = 0;
 
-            // Dapatkan elemen setelah DOM siap
             const containerOther = document.getElementById('wahanaContainerOther');
             const prevBtnOther = document.getElementById('prevBtnOther');
             const nextBtnOther = document.getElementById('nextBtnOther');
-            const loadingPlaceholder = document.getElementById('loadingPlaceholder'); // Ambil placeholder
+            const loadingPlaceholder = document.getElementById('loadingPlaceholder'); 
 
-             // --- Tambahan Debugging ---
             console.log("Slider Data:", { totalItems: wahanaItemsOther.length, itemsPerSlide: itemsPerSlideOther, totalSlides: totalSlidesOther });
-            // -------------------------
+           
 
             function renderSlideOther(slideIndex) {
-                 // --- Tambahan Debugging ---
+            
                 console.log("Rendering Slide:", slideIndex);
-                // -------------------------
+             
 
                 if (!containerOther) { console.error("Container 'wahanaContainerOther' not found."); return; }
-                containerOther.innerHTML = ""; // Hapus isi lama (termasuk placeholder)
+                containerOther.innerHTML = ""; 
 
                 const start = slideIndex * itemsPerSlideOther;
                 const itemsToShow = wahanaItemsOther.slice(start, start + itemsPerSlideOther);
@@ -141,15 +129,14 @@
                     return;
                 }
 
-                // Update kelas grid container sesuai jumlah item aktual
                 containerOther.className = `grid grid-cols-1 sm:grid-cols-${Math.min(itemsToShow.length, 2)} lg:grid-cols-${Math.min(itemsToShow.length, itemsPerSlideOther)} gap-6 w-full max-w-5xl overflow-hidden`;
 
 
                 itemsToShow.forEach((item) => {
-                    // Cek jika item adalah objek dan punya properti yang dibutuhkan
+                    
                     if (typeof item !== 'object' || item === null || !item.slug || !item.gambar || !item.nama) {
                         console.error("Invalid item data found:", item);
-                        return; // Skip item ini jika data tidak valid
+                        return;
                     }
 
                     const safeSlug = item.slug.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
@@ -179,10 +166,9 @@
                 console.log("Buttons updated:", { currentSlide: currentSlideOther, totalSlides: totalSlidesOther, canSlide, prevDisabled: prevBtnOther.disabled, nextDisabled: nextBtnOther.disabled });
             }
 
-            // Event listeners
             if (nextBtnOther) {
                 nextBtnOther.addEventListener('click', () => {
-                    if (totalSlidesOther <= 1) return; // Jangan lakukan apa-apa jika hanya 1 slide
+                    if (totalSlidesOther <= 1) return;
                     if (currentSlideOther < totalSlidesOther - 1) {
                         currentSlideOther++;
                         renderSlideOther(currentSlideOther);
@@ -192,7 +178,7 @@
 
             if (prevBtnOther) {
                 prevBtnOther.addEventListener('click', () => {
-                    if (totalSlidesOther <= 1) return; // Jangan lakukan apa-apa jika hanya 1 slide
+                    if (totalSlidesOther <= 1) return; 
                     if (currentSlideOther > 0) {
                         currentSlideOther--;
                         renderSlideOther(currentSlideOther);
@@ -200,13 +186,11 @@
                 });
             } else { console.error("Button 'prevBtnOther' not found."); }
 
-            // Render awal
             if (containerOther && wahanaItemsOther.length > 0) {
                 renderSlideOther(currentSlideOther);
             } else if (containerOther) {
-                // Jika container ada tapi data kosong, tampilkan pesan
                 containerOther.innerHTML = '<p class="text-center text-gray-500 col-span-full">Tidak ada wahana lainnya.</p>';
-                // Nonaktifkan tombol jika data kosong
+              
                 if(prevBtnOther) prevBtnOther.disabled = true;
                 if(nextBtnOther) nextBtnOther.disabled = true;
             } else {

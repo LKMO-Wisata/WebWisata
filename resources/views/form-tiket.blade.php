@@ -12,12 +12,12 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        /* Mengatasi 'flash' saat Alpine.js dimuat */
+      
         [x-cloak] {
             display: none !important;
         }
         
-        /* Hapus 'spinner' default di input[type=number] */
+     
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;

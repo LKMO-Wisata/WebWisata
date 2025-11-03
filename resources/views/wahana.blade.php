@@ -14,7 +14,6 @@
 
     @include('layouts.navbar')
 
-    {{-- ===== Judul & Deskripsi ===== --}}
     <section class="text-center py-16 px-4">
         <h1 class="text-3xl md:text-4xl font-extrabold text-[#001B60] mb-3">
             Jelajahi Semua Wahana <br> Wondersplash Park
@@ -24,10 +23,6 @@
         </p>
     </section>
 
-    {{-- ===== Kolom Pencarian DIHAPUS ===== --}}
-    {{-- <section class="mb-12 px-4"> ... </section> --}}
-
-    {{-- ===== Grid Wahana ===== --}}
     <section class="container mx-auto px-4 pb-16">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -50,14 +45,14 @@
                 ];
             @endphp
 
-            {{-- Looping data wahana --}}
+
             @foreach ($wahanaItems as $item)
             <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <img src="{{ asset($item['gambar']) }}" alt="{{ $item['nama'] }}" class="h-60 w-full object-cover"> 
                 <div class="bg-sky-100 p-4"> 
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-800 mb-1">{{ $item['nama'] }}</h3>
             
-                    {{-- Menggunakan route() helper dengan parameter 'slug' --}}
+            
                     <a href="{{ route('wahana.detail', ['slug' => $item['slug']]) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">
                         Lihat Detail
                     </a>

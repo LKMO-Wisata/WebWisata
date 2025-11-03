@@ -23,7 +23,7 @@
         <h2 class="text-center text-3xl font-bold text-[#001B60] mb-12">Fasilitas Kami</h2>
 
         @php
-            // Data fasilitas didefinisikan di sini
+            
             $fasilitas = [
                 ['nama' => 'Musholah',    'desc' => 'Fasilitas tempat ibadah yang bersih dan nyaman tersedia untuk pengunjung.', 'gambar' => 'Mushollah.jpg'],
                 ['nama' => 'Parking Lot', 'desc' => 'Fasilitas tempat parkir yang bersih dan nyaman tersedia untuk pengunjung.', 'gambar' => 'Parking Lot.jpg'],
@@ -33,18 +33,18 @@
             ];
         @endphp
 
-        {{-- Container untuk Grid Card Fasilitas --}}
+        
         <div class="container mx-auto px-4">
-             {{-- ✅ GRID DIPERBAIKI: Hapus xl:grid-cols-4 agar konsisten 3 kolom di layar besar --}}
+           
              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center"> 
-                 {{-- justify-items-center ditambahkan untuk mencoba menengahkan item di dalam kolom gridnya --}}
+            
                 @foreach ($fasilitas as $item)
-                    {{-- Card Container (diberi max-width agar tidak terlalu lebar di grid) --}}
+                    
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 flex flex-col w-full max-w-sm"> 
-                        {{-- Gambar Fasilitas --}}
+                        
                         <img src="{{ asset('img/fasilitas/' . $item['gambar']) }}" alt="{{ $item['nama'] }}" class="h-48 w-full object-cover grayscale hover:grayscale-0 transition duration-300"> 
                         
-                        {{-- Konten Teks di Bawah Gambar --}}
+                      
                         <div class="bg-[#001B60] text-white p-4 flex-grow flex flex-col"> 
                              <div class="flex items-center space-x-2 mb-2">
                                 <span class="bg-yellow-400 text-[#001B60] rounded-full p-1 flex-shrink-0"> 
