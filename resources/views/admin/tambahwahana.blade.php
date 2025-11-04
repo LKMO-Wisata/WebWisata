@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit - {{ $wahana['nama'] }}</title>
+    <title>Tambah Wahana Baru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
 </head>
@@ -22,13 +22,13 @@
             <div class="text-sm text-gray-500 mb-4 mt-12 lg:mt-0">
                 <a href="{{ route('admin.wahana') }}" class="hover:underline">Dashboard</a> /
                 <a href="{{ route('admin.wahana') }}" class="hover:underline">Atur Wahana</a> /
-                <span class="font-semibold text-gray-700">Edit Wahana</span>
+                <span class="font-semibold text-gray-700">Tambah Wahana</span>
             </div>
 
-            <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">Edit Wahana</h2>
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-6">Tambah Wahana Baru</h2>
 
-            {{-- PERBAIKAN: Menambahkan enctype untuk upload file --}}
-            <form action="{{ route('admin.wahana.update', ['slug' => $wahana['slug']]) }}" method="POST" enctype="multipart/form-data">
+            {{-- Form ini mengirim ke route 'admin.wahana.store' --}}
+            <form action="{{ route('admin.wahana.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf 
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
@@ -36,14 +36,17 @@
                     <div class="lg:col-span-1">
                         <div class="bg-white p-4 md:p-6 rounded-lg shadow-xl">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Foto Wahana</label>
-                            <img src="{{ asset($wahana['gambar']) }}" alt="{{ $wahana['nama'] }}" class="w-full h-auto object-cover rounded-lg shadow-md mb-4">
                             
-                            {{-- PERBAIKAN: Ini sekarang adalah input file --}}
+                            {{-- Placeholder untuk gambar --}}
+                            <div id="imagePreview" class="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 mb-4">
+                                Preview Foto
+                            </div>
+                            
                             <label for="foto_wahana" class="cursor-pointer w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 block">
-                                Ganti Foto
+                                Pilih Foto
                             </label>
-                            <input type="file" name="foto_wahana" id="foto_wahana" class="hidden">
-                            <p class="text-xs text-gray-500 mt-2">Kosongkan jika tidak ingin mengganti foto.</p>
+                            <input type="file" name="foto_wahana" id="foto_wahana" class="hidden" required>
+                            <p class="text-xs text-gray-500 mt-2">Foto wajib diisi.</p>
                         </div>
                     </div>
 
@@ -53,26 +56,28 @@
                             <div>
                                 <label for="nama_wahana" class="block text-sm font-medium text-gray-700">Nama Wahana</label>
                                 <input type="text" name="nama_wahana" id="nama_wahana" 
-                                       value="{{ $wahana['nama'] }}" 
-                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                       value="" placeholder="Contoh: Bumper Cars" 
+                                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                             </div>
 
                             <div>
                                 <label for="deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi Wahana</label>
                                 <textarea name="deskripsi" id="deskripsi" rows="8" 
-                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ $wahana['deskripsi'] }}</textarea>
+                                          placeholder="Deskripsi singkat wahana..."
+                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required></textarea>
                             </div>
 
                             <div>
                                 <label for="ketentuan" class="block text-sm font-medium text-gray-700">Syarat dan Ketentuan</label>
                                 <p class="text-xs text-gray-500 mb-1">Masukkan satu ketentuan per baris.</p>
                                 <textarea name="ketentuan" id="ketentuan" rows="8" 
-                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ implode("\n", $wahana['ketentuan']) }}</textarea>
+                                          placeholder="Contoh: Usia: minimal 15 tahun&#10;Tinggi badan: Minimal 130 cm"
+                                          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required></textarea>
                             </div>
 
                             <div class="text-right">
                                 <button type="submit" class="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0d1741] hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Simpan Perubahan
+                                    Simpan Wahana Baru
                                 </button>
                             </div>
 
@@ -87,6 +92,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Script Sidebar ---
             const sidebar = document.getElementById('sidebar');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
@@ -101,15 +107,26 @@
             if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-            // Script kecil untuk menampilkan nama file (opsional tapi bagus)
+            // --- Script Preview Foto ---
             const fileInput = document.getElementById('foto_wahana');
             const fileLabel = document.querySelector('label[for="foto_wahana"]');
-            if(fileInput && fileLabel) {
+            const imagePreview = document.getElementById('imagePreview');
+
+            if(fileInput && fileLabel && imagePreview) {
                 fileInput.addEventListener('change', () => {
                     if (fileInput.files.length > 0) {
-                        fileLabel.textContent = fileInput.files[0].name;
+                        const file = fileInput.files[0];
+                        fileLabel.textContent = file.name;
+                        
+                        // Tampilkan preview gambar
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover rounded-lg">`;
+                        };
+                        reader.readAsDataURL(file);
                     } else {
-                        fileLabel.textContent = 'Ganti Foto';
+                        fileLabel.textContent = 'Pilih Foto';
+                        imagePreview.innerHTML = 'Preview Foto';
                     }
                 });
             }
@@ -118,4 +135,3 @@
 
 </body>
 </html>
-
