@@ -1,6 +1,20 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentController;
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-mail', function () {
+    try {
+        Mail::raw('Hello from Laravel SMTP (Gmail App Password).', function ($m) {
+            $m->to('alamatmu@contoh.com')->subject('SMTP Test');
+        });
+        return 'OK: Email dicoba kirim.';
+    } catch (\Throwable $e) {
+        \Log::error('MAIL ERROR: '.$e->getMessage());
+        return 'ERROR: '.$e->getMessage();
+    }
+});
 
 Route::get('/', function () {
     return view('homepage');
