@@ -66,6 +66,12 @@ Route::get('/tiket', fn() => view('tiket'))->name('tiket'); // Halaman ini punya
 Route::get('/form-tiket', fn() => view('form-tiket'))->name('form-tiket');
 Route::get('/pembayaran', fn() => view('pembayaran'))->name('pembayaran');
 
+Route::post('/feedback', function (Request $request) {
+    // Simulasi simpan feedback
+    Log::info('Feedback diterima:', $request->all());
+    return back()->with('success', 'Terima kasih atas masukan Anda!');
+})->name('feedback.store');
+
 // Route Fasilitas Publik (Menggunakan data $allFasilitas)
 Route::get('/fasilitas', function () use ($allFasilitas) {
     return view('fasilitas', ['fasilitas' => $allFasilitas]);
