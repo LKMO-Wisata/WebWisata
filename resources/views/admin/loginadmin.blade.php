@@ -93,11 +93,7 @@
                 </form>
 
                 <!-- Debug Link (Hanya untuk Development) -->
-                <div class="text-center mt-4">
-                    <a href="/admin/debug" class="text-yellow-300 text-xs hover:underline">
-                        (Debug: Langsung masuk dashboard)
-                    </a>
-                </div>
+                
             </div>
 
             <!-- Right Side: Google Login (Nonaktif) -->
