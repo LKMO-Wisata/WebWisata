@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fasilitas | Watersplash Park</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png"> <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-white font-sans text-gray-900">
 
     @include('layouts.navbar')
 
-    {{-- ===== Judul ===== --}}
     <section class="text-center py-16 bg-gray-50">
         <h1 class="text-3xl md:text-4xl font-extrabold text-[#001B60]">
             Kenyamanan Anda <br>
@@ -18,7 +18,6 @@
         </h1>
     </section>
 
-    {{-- ===== Section Fasilitas Utama ===== --}}
     <section class="py-16">
         <h2 class="text-center text-3xl font-bold text-[#001B60] mb-12">Fasilitas Kami</h2>
 

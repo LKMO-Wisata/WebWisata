@@ -3,17 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage | Watersplash Park</title> {{-- Judul diperbaiki --}}
+    <title>Homepage | Watersplash Park</title> 
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <style>
-        /* Optional: Tambahkan font kustom jika perlu */
+
+        #ratingHearts .fa-heart {
+            transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        #ratingHearts .fa-heart:hover {
+            transform: scale(1.15);
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
 
    @include('layouts.navbar')
-
+@if (session('success'))
+        <div class="container mx-auto px-6 py-4 mt-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Berhasil!</strong>
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
 <header id="hero-section"
     class="relative h-[75vh] bg-center bg-cover transition-all duration-500 ease-in-out"
     style="background-image: url('{{ asset('img/homepage1.jpeg') }}');
@@ -34,7 +50,6 @@
 </header>
 
 <script>
-
     const images = [
         "{{ asset('img/homepage1.jpeg') }}",
         "{{ asset('img/homepage2.jpeg') }}",
@@ -75,12 +90,12 @@
         ['nama' => 'Fantasy Voyage',   'gambar' => 'img/wahana/wahana3.jpeg',  'slug' => 'Fantasy Voyage'],
         ['nama' => 'Mini Bumper Blast','gambar' => 'img/wahana/wahana4.jpeg',  'slug' => 'Mini Bumper Blast'], 
         ['nama' => 'Mini Glowtopus Spin','gambar' => 'img/wahana/wahana5.jpeg', 'slug' => 'Mini Glowtopus Spin'], 
-        ['nama' => 'Pirate Ship',      'gambar' => 'img/wahana/wahana6.jpeg',  'slug' => 'Pirate Ship'], 
+        ['nama' => 'Pirate Ship',       'gambar' => 'img/wahana/wahana6.jpeg',  'slug' => 'Pirate Ship'], 
         ['nama' => 'Rapid River Splash','gambar' => 'img/wahana/wahana7.jpeg', 'slug' => 'Rapid River Splash'],
         ['nama' => 'Rush Rider',       'gambar' => 'img/wahana/wahana8.jpeg',  'slug' => 'Rush Rider'],
-        ['nama' => 'Sky Wheel',        'gambar' => 'img/wahana/wahana9.jpeg',  'slug' => 'Sky Wheel'],
+        ['nama' => 'Sky Wheel',         'gambar' => 'img/wahana/wahana9.jpeg',  'slug' => 'Sky Wheel'],
         ['nama' => 'Swan Lake Paddle', 'gambar' => 'img/wahana/wahana10.jpeg', 'slug' => 'Swan Lake Paddle'],
-        ['nama' => 'Trampland',        'gambar' => 'img/wahana/wahana11.jpeg', 'slug' => 'Trampland'],
+        ['nama' => 'Trampland',         'gambar' => 'img/wahana/wahana11.jpeg', 'slug' => 'Trampland'],
         ['nama' => 'Twinkle Carousel', 'gambar' => 'img/wahana/wahana12.jpeg', 'slug' => 'Twinkle Carousel'],
     ];
     $itemsPerSlide = 3;
@@ -109,8 +124,54 @@
     </div>
 </section>
 
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <div class="bg-white max-w-2xl mx-auto p-8 md:p-12 rounded-lg shadow-xl relative mt-10">
+            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-blue-600 p-5 rounded-full shadow-lg border-4 border-white">
+                <i class="fa-solid fa-pencil text-white text-2xl"></i>
+            </div>
+
+            <h2 class="text-2xl font-bold text-center text-gray-800 mt-8 mb-2">Masukan Anda adalah inspirasi kami.</h2>
+            <p class="text-center text-gray-500 mb-6">Beri kami nilai!</p>
+
+            <form action="{{ route('feedback.store') }}" method="POST"> 
+                @csrf <div class="flex justify-center space-x-2 mb-6" id="ratingHearts">
+                    <i class="fa-regular fa-heart text-gray-300 text-3xl cursor-pointer" data-value="1"></i>
+                    <i class="fa-regular fa-heart text-gray-300 text-3xl cursor-pointer" data-value="2"></i>
+                    <i class="fa-regular fa-heart text-gray-300 text-3xl cursor-pointer" data-value="3"></i>
+                    <i class="fa-regular fa-heart text-gray-300 text-3xl cursor-pointer" data-value="4"></i>
+                    <i class="fa-regular fa-heart text-gray-300 text-3xl cursor-pointer" data-value="5"></i>
+                </div>
+                
+                <input type="hidden" name="rating" id="ratingInput" value="0">
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <input type="email" name="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Masukan Email Anda">
+                    </div>
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" name="name" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Masukan Nama Anda">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Pesan*</label>
+                        <textarea name="message" id="message" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Tuliskan Masukan Anda disini..."></textarea>
+                    </div>
+                </div>
+
+                <div class="text-center mt-6">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-md hover:shadow-lg">
+                        Kirim Masukan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 <script>
 document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap
+
 
     const wahanaDataJs = @json($wahanaDataHomepage); 
     const itemsPerSlideJs = {{ $itemsPerSlide }};
@@ -126,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap
         containerJs.innerHTML = ""; 
         
         const start = slideIndex * itemsPerSlideJs;
-
         const itemsToShow = wahanaDataJs.slice(start, start + itemsPerSlideJs); 
 
         if (!itemsToShow || itemsToShow.length === 0) {
@@ -135,37 +195,32 @@ document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap
              return;
         }
 
-        itemsToShow.forEach((item, i) => { // Sekarang 'item' adalah object
-             // ✅ Buat URL Gambar & Detail dari 'item'
+        itemsToShow.forEach((item, i) => { 
              const imageUrl = `{{ asset('') }}${item.gambar}`;
-             // Buat slug manual jika perlu (atau gunakan slug dari data jika sudah URL-safe)
              const safeSlug = (item.slug || '').toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-             const detailUrl = `/wahana/${safeSlug}`; // Arahkan ke route detail
+             const detailUrl = `/wahana/${safeSlug}`; 
 
-            containerJs.innerHTML += `
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition duration-300 transform hover:scale-105"> {{-- Efek hover ditambahkan --}}
-                    <img src="${imageUrl}" 
-                         alt="${item.nama}" 
-                         class="h-56 w-full object-cover">
-                    <div class="p-5 bg-sky-100"> {{-- Warna background disesuaikan --}}
-                        <p class="text-sm font-semibold uppercase tracking-wider text-gray-800 mb-1">${item.nama}</p> {{-- Style nama disesuaikan --}}
-                        {{-- ✅ UBAH: href diisi detailUrl --}}
-                        <a href="${detailUrl}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">Lihat Detail</a> 
-                    </div>
-                </div>
-            `;
+             containerJs.innerHTML += `
+                 <div class="bg-white rounded-lg shadow-lg overflow-hidden transition duration-300 transform hover:scale-105"> 
+                     <img src="${imageUrl}" 
+                          alt="${item.nama}" 
+                          class="h-56 w-full object-cover">
+                     <div class="p-5 bg-sky-100"> 
+                         <p class="text-sm font-semibold uppercase tracking-wider text-gray-800 mb-1">${item.nama}</p> 
+                         <a href="${detailUrl}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">Lihat Detail</a> 
+                     </div>
+                 </div>
+             `;
         });
-        updateHomepageButtons(); // Update tombol setelah render
+        updateHomepageButtons(); 
     }
     
-    // ✅ Fungsi update tombol (lebih baik untuk non-circular slider)
     function updateHomepageButtons() {
         if (!prevBtnJs || !nextBtnJs) return;
         prevBtnJs.disabled = currentSlideJs === 0;
         nextBtnJs.disabled = currentSlideJs >= totalSlidesJs - 1 || wahanaDataJs.length <= itemsPerSlideJs;
     }
 
-    // Event listener tombol kanan (tanpa modulo)
     if (nextBtnJs) {
         nextBtnJs.addEventListener('click', () => {
             if (currentSlideJs < totalSlidesJs - 1) {
@@ -175,7 +230,6 @@ document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap
         });
     }
 
-    // Event listener tombol kiri (tanpa modulo)
     if (prevBtnJs) {
         prevBtnJs.addEventListener('click', () => {
             if (currentSlideJs > 0) {
@@ -185,7 +239,61 @@ document.addEventListener('DOMContentLoaded', function() { // Pastikan DOM siap
         });
     }
 
-    // Render awal
+
+    const ratingContainer = document.getElementById('ratingHearts');
+    if (ratingContainer) { // Cek jika elemennya ada
+        const hearts = ratingContainer.querySelectorAll('.fa-heart');
+        const ratingInput = document.getElementById('ratingInput');
+
+        const updateRatingUI = (ratingValue) => {
+            hearts.forEach((h, i) => {
+                if (i < ratingValue) {
+                    // Hati yang dipilih & sebelumnya
+                    h.classList.add('text-red-500');    // Warna merah
+                    h.classList.remove('text-gray-300');
+                    h.classList.add('fa-solid');        // Icon solid (penuh)
+                    h.classList.remove('fa-regular');   // Hapus icon regular (kosong)
+                } else {
+                    // Hati setelahnya
+                    h.classList.add('text-gray-300');   // Warna abu-abu
+                    h.classList.remove('text-red-500');
+                    h.classList.add('fa-regular');      // Icon regular (kosong)
+                    h.classList.remove('fa-solid');     // Hapus icon solid (penuh)
+                }
+            });
+        };
+
+        hearts.forEach((heart, index) => {
+            // Saat hati di-klik
+            heart.addEventListener('click', () => {
+                const ratingValue = index + 1; // Rating adalah 1-5
+                ratingInput.value = ratingValue; // Simpan nilainya di input tersembunyi
+                updateRatingUI(ratingValue);     // Perbarui tampilan hati
+            });
+
+            // Efek hover (opsional tapi bagus)
+            heart.addEventListener('mouseover', () => {
+                const hoverValue = index + 1;
+                hearts.forEach((h, i) => {
+                    if (i < hoverValue) {
+                        h.classList.add('text-red-400'); // Warna hover
+                        h.classList.remove('text-gray-300');
+                    } else {
+                        h.classList.add('text-gray-300');
+                        h.classList.remove('text-red-400');
+                    }
+                });
+            });
+        });
+
+        // Saat mouse keluar dari area rating, kembalikan ke state yang tersimpan
+        ratingContainer.addEventListener('mouseleave', () => {
+            const currentRating = parseInt(ratingInput.value, 10);
+            updateRatingUI(currentRating); // Setel ulang ke rating yang terakhir di-klik
+        });
+    }
+
+    // Render awal slider (sudah ada)
     renderSlideHomepage(0);
 });
 </script>
