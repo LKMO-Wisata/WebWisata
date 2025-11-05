@@ -3,233 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $wahana['nama'] }} | Watersplash Park</title>
+    <title>{{ $wahanaDetail->nama }} | Watersplash Park</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-    </style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-white font-sans text-gray-900">
 
     @include('layouts.navbar')
 
-    <div id="wahanaHeroBanner" 
-     class="relative h-[60vh] md:h-[70vh] bg-cover bg-center cursor-pointer transition-all duration-300" 
-     style="background-image: url('{{ asset($wahana['gambar'][0]) }}');">
-     
-    <div class="absolute inset-0 bg-black bg-opacity-30"></div>
-    <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-gradient-to-t from-black via-black/70 to-transparent">
-        <h1 class="text-3xl md:text-5xl font-bold text-white text-center uppercase tracking-wider">{{ $wahana['nama'] }}</h1>
+    {{-- HERO --}}
+    @php
+        $heroUrl = $wahanaDetail->primary_photo_url ?? asset('img/no-image.png');
+        $allPhotos = $wahanaDetail->photo_urls ?? [];
+    @endphp
+    <div id="wahanaHeroBanner"
+         class="relative h-[60vh] md:h-[70vh] bg-cover bg-center transition-all duration-300 {{ count($allPhotos) > 1 ? 'cursor-pointer' : '' }}"
+         style="background-image: url('{{ $heroUrl }}');">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-gradient-to-t from-black via-black/70 to-transparent">
+            <h1 class="text-3xl md:text-5xl font-bold text-white text-center uppercase tracking-wider">
+                {{ $wahanaDetail->nama }}
+            </h1>
+        </div>
     </div>
-</div>
 
+    {{-- KONTEN --}}
     <section class="container mx-auto px-4 py-12 md:py-16">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            
-            <div class="md:col-span-1 space-y-6">
+
+            {{-- Sidebar Ketentuan --}}
+            <aside class="md:col-span-1 space-y-6">
                 <h2 class="text-xl font-semibold text-[#001B60] border-b pb-2">Ketentuan :</h2>
                 <ul class="space-y-2 text-sm text-gray-700">
-                    @if(isset($wahana['ketentuan']) && is_array($wahana['ketentuan']))
-                        @foreach ($wahana['ketentuan'] as $k)
-                        <li class="flex items-start">
-                            <span class="flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-2 mt-0.5">
-                                <i class="fas fa-info text-white text-xs"></i>
-                            </span>
-                            <span>{{ $k }}</span>
-                        </li>
+                    @if(is_array($wahanaDetail->ketentuan) && count($wahanaDetail->ketentuan))
+                        @foreach ($wahanaDetail->ketentuan as $k)
+                            <li class="flex items-start">
+                                <span class="flex-shrink-0 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center mr-2 mt-0.5">
+                                    <i class="fas fa-info text-white text-xs"></i>
+                                </span>
+                                <span>{{ $k }}</span>
+                            </li>
                         @endforeach
                     @else
                         <li>Informasi ketentuan belum tersedia.</li>
                     @endif
                 </ul>
-                <a href="{{ url('/tiket') }}" class="inline-block w-full text-center bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+
+                <a href="{{ url('/tiket') }}"
+                   class="inline-block w-full text-center bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow hover:bg-blue-700 transition duration-300">
                     Beli Tiket Sekarang
                 </a>
-            </div>
+            </aside>
 
-            <div class="md:col-span-2">
-                <h2 class="text-2xl font-bold text-[#001B60] mb-4">{{ $wahana['nama'] }}</h2>
+            {{-- Deskripsi --}}
+            <article class="md:col-span-2">
+                <h2 class="text-2xl font-bold text-[#001B60] mb-4">{{ $wahanaDetail->nama }}</h2>
                 <p class="text-gray-600 leading-relaxed text-justify">
-                    {{ $wahana['deskripsi'] ?? 'Deskripsi wahana belum tersedia.' }}
+                    {{ $wahanaDetail->deskripsi ?? 'Deskripsi wahana belum tersedia.' }}
                 </p>
-            </div>
+
+                {{-- (Opsional) Galeri foto kecil --}}
+                @if(count($allPhotos) > 1)
+                    <div class="mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        @foreach($allPhotos as $url)
+                            <button type="button"
+                                    class="block rounded overflow-hidden border border-gray-200 hover:ring-2 hover:ring-blue-400 transition"
+                                    onclick="swapHero('{{ $url }}')">
+                                <img src="{{ $url }}" alt="Foto {{ $wahanaDetail->nama }}"
+                                     class="w-full h-20 object-cover">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
+            </article>
+
         </div>
     </section>
 
+    {{-- Wahana Lainnya --}}
+    @php
+        // siapkan data slider: nama, slug, foto utama
+        $sliderItems = ($otherWahana ?? collect())->map(function($w){
+            return [
+                'nama'   => $w->nama,
+                'slug'   => $w->slug,
+                'foto'   => $w->primary_photo_url ?? asset('img/no-image.png'),
+            ];
+        })->values()->all();
+        $itemsPerSlide = 3;
+    @endphp
 
-    @if(isset($others) && count($others) > 0)
-        @php
-            $wahanaSliderItems = $others;
-            $itemsPerSlide = 3;
-            $totalSlidesJS = ceil(count($wahanaSliderItems) / $itemsPerSlide);
-        @endphp
-
+    @if(!empty($sliderItems))
         <section class="py-16 bg-gray-100">
             <div class="container mx-auto px-6">
                 <h2 class="text-2xl font-bold text-[#001B60] text-center mb-12">
                     Jelajahi Wahana Lainnya
                 </h2>
                 <div class="flex justify-center items-center space-x-4">
-                    {{-- Tombol Kiri --}}
-                    <button id="prevBtnOther" class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/> </svg>
+                    <button id="prevBtnOther"
+                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
                     </button>
-                    {{-- Container Card --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl overflow-hidden" id="wahanaContainerOther">
-                        <div class="text-center text-gray-500 py-10 col-span-full" id="loadingPlaceholder">Memuat wahana...</div>
+
+                    <div id="wahanaContainerOther"
+                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl overflow-hidden">
+                        <div class="text-center text-gray-500 py-10 col-span-full" id="loadingPlaceholder">
+                            Memuat wahana...
+                        </div>
                     </div>
-                    {{-- Tombol Kanan --}}
-                    <button id="nextBtnOther" class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/> </svg>
+
+                    <button id="nextBtnOther"
+                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
                     </button>
                 </div>
             </div>
         </section>
     @else
-   
         <section class="bg-gray-100 py-16">
-             <div class="container mx-auto px-4">
-                 <h2 class="text-2xl font-bold text-center text-[#001B60] mb-10">Jelajahi Wahana Lainnya</h2>
-             </div>
-         </section>
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-center text-[#001B60] mb-10">Jelajahi Wahana Lainnya</h2>
+                <p class="text-center text-gray-500">Belum ada rekomendasi lainnya.</p>
+            </div>
+        </section>
     @endif
 
     @include('layouts.footer')
 
-    @if(isset($others) && count($others) > 0)
-        <script>
+    {{-- Scripts --}}
+    <script>
+        // ===== Hero swap (klik hero / klik thumbnail) =====
+        const heroBanner = document.getElementById('wahanaHeroBanner');
+        const photoList  = @json($allPhotos);
+        let heroIndex = 0;
 
-            const wahanaItemsOther = @json($wahanaSliderItems);
-            const itemsPerSlideOther = {{ $itemsPerSlide }};
-            const totalSlidesOther = Math.ceil(wahanaItemsOther.length / itemsPerSlideOther);
-            let currentSlideOther = 0;
+        function setHero(url) {
+            if (heroBanner) {
+                heroBanner.style.backgroundImage = `url('${url}')`;
+            }
+        }
 
-            const containerOther = document.getElementById('wahanaContainerOther');
-            const prevBtnOther = document.getElementById('prevBtnOther');
-            const nextBtnOther = document.getElementById('nextBtnOther');
-            const loadingPlaceholder = document.getElementById('loadingPlaceholder'); 
+        function swapHero(url) {
+            setHero(url);
+            heroIndex = photoList.indexOf(url) >= 0 ? photoList.indexOf(url) : heroIndex;
+        }
 
-            console.log("Slider Data:", { totalItems: wahanaItemsOther.length, itemsPerSlide: itemsPerSlideOther, totalSlides: totalSlidesOther });
-           
+        if (heroBanner && Array.isArray(photoList) && photoList.length > 1) {
+            heroBanner.addEventListener('click', () => {
+                heroIndex = (heroIndex + 1) % photoList.length;
+                setHero(photoList[heroIndex]);
+            });
+        }
 
-            function renderSlideOther(slideIndex) {
-            
-                console.log("Rendering Slide:", slideIndex);
-             
+        // ===== Slider "Wahana Lainnya" =====
+        @if(!empty($sliderItems))
+        (function(){
+            const items = @json($sliderItems);
+            const per   = {{ $itemsPerSlide }};
+            const total = Math.ceil(items.length / per);
 
-                if (!containerOther) { console.error("Container 'wahanaContainerOther' not found."); return; }
-                containerOther.innerHTML = ""; 
+            let current = 0;
 
-                const start = slideIndex * itemsPerSlideOther;
-                const itemsToShow = wahanaItemsOther.slice(start, start + itemsPerSlideOther);
+            const container = document.getElementById('wahanaContainerOther');
+            const prevBtn   = document.getElementById('prevBtnOther');
+            const nextBtn   = document.getElementById('nextBtnOther');
+            const loading   = document.getElementById('loadingPlaceholder');
 
-                if (!itemsToShow || itemsToShow.length === 0) {
-                    console.warn("No items for slide:", slideIndex);
-                    containerOther.innerHTML = '<p class="text-center text-gray-500 col-span-full">Tidak ada wahana.</p>';
-                    updateButtonStatesOther();
-                    return;
-                }
+            function routeDetail(slug) {
+                // Rute publik sekarang: /wahana/{slug}
+                return `{{ url('/wahana') }}/${slug}`;
+            }
 
-                containerOther.className = `grid grid-cols-1 sm:grid-cols-${Math.min(itemsToShow.length, 2)} lg:grid-cols-${Math.min(itemsToShow.length, itemsPerSlideOther)} gap-6 w-full max-w-5xl overflow-hidden`;
+            function renderSlide(idx){
+                if (!container) return;
 
+                if (loading) loading.remove();
+                container.innerHTML = '';
 
-                itemsToShow.forEach((item) => {
-                    
-                    if (typeof item !== 'object' || item === null || !item.slug || !item.gambar || !item.nama) {
-                        console.error("Invalid item data found:", item);
-                        return;
-                    }
+                const start = idx * per;
+                const subset = items.slice(start, start + per);
 
-                    const safeSlug = item.slug.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
-                    const detailUrl = `/wahana/${safeSlug}`;
-                    let imageUrl = `{{ asset('') }}${item.gambar[0]}`;
-                    imageUrl = imageUrl.replace(/([^:]\/)\/+/g, "$1");
+                container.className = `grid grid-cols-1 sm:grid-cols-${Math.min(subset.length,2)} lg:grid-cols-${Math.min(subset.length, per)} gap-6 w-full max-w-5xl overflow-hidden`;
 
-                    containerOther.innerHTML += `
+                subset.forEach(it => {
+                    const card = `
                         <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-shadow h-full flex flex-col">
-                            <img src="${imageUrl}" alt="${item.nama}" class="h-40 w-full object-cover">
+                            <img src="${it.foto}" alt="${it.nama}" class="h-40 w-full object-cover">
                             <div class="p-4 flex-grow flex flex-col justify-between">
-                                <div> <h4 class="text-sm font-semibold uppercase tracking-wider text-gray-700 mb-1">${item.nama}</h4> </div>
-                                <a href="${detailUrl}" class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline mt-2 self-start">Lihat Detail</a>
+                                <div>
+                                  <h4 class="text-sm font-semibold uppercase tracking-wider text-gray-700 mb-1">${it.nama}</h4>
+                                </div>
+                                <a href="${routeDetail(it.slug)}"
+                                   class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline mt-2 self-start">
+                                   Lihat Detail
+                                </a>
                             </div>
                         </div>
                     `;
+                    container.insertAdjacentHTML('beforeend', card);
                 });
 
-                updateButtonStatesOther();
+                updateNav();
             }
 
-            function updateButtonStatesOther() {
-                if (!prevBtnOther || !nextBtnOther) { console.error("Buttons not found."); return; }
-                const canSlide = wahanaItemsOther.length > itemsPerSlideOther;
-                prevBtnOther.disabled = !canSlide || currentSlideOther === 0;
-                nextBtnOther.disabled = !canSlide || currentSlideOther >= totalSlidesOther - 1;
-                console.log("Buttons updated:", { currentSlide: currentSlideOther, totalSlides: totalSlidesOther, canSlide, prevDisabled: prevBtnOther.disabled, nextDisabled: nextBtnOther.disabled });
+            function updateNav(){
+                const canSlide = items.length > per;
+                if (prevBtn) prevBtn.disabled = !canSlide || current === 0;
+                if (nextBtn) nextBtn.disabled = !canSlide || current >= total - 1;
             }
 
-            if (nextBtnOther) {
-                nextBtnOther.addEventListener('click', () => {
-                    if (totalSlidesOther <= 1) return;
-                    if (currentSlideOther < totalSlidesOther - 1) {
-                        currentSlideOther++;
-                        renderSlideOther(currentSlideOther);
-                    }
-                });
-            } else { console.error("Button 'nextBtnOther' not found."); }
+            prevBtn?.addEventListener('click', () => {
+                if (current > 0) {
+                    current--;
+                    renderSlide(current);
+                }
+            });
+            nextBtn?.addEventListener('click', () => {
+                if (current < total - 1) {
+                    current++;
+                    renderSlide(current);
+                }
+            });
 
-            if (prevBtnOther) {
-                prevBtnOther.addEventListener('click', () => {
-                    if (totalSlidesOther <= 1) return; 
-                    if (currentSlideOther > 0) {
-                        currentSlideOther--;
-                        renderSlideOther(currentSlideOther);
-                    }
-                });
-            } else { console.error("Button 'prevBtnOther' not found."); }
-
-            if (containerOther && wahanaItemsOther.length > 0) {
-                renderSlideOther(currentSlideOther);
-            } else if (containerOther) {
-                containerOther.innerHTML = '<p class="text-center text-gray-500 col-span-full">Tidak ada wahana lainnya.</p>';
-              
-                if(prevBtnOther) prevBtnOther.disabled = true;
-                if(nextBtnOther) nextBtnOther.disabled = true;
-            } else {
-                console.error("Initial render failed: Container not found or no items.");
-            }
-        </script>
-    @endif
-
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    const heroImages = @json($wahana['gambar']);
-    
-    if (heroImages && heroImages.length > 1) {
-        
-        const heroBanner = document.getElementById('wahanaHeroBanner');
-        let currentImageIndex = 0;
-
-        heroBanner.addEventListener('click', function() {
-
-            currentImageIndex = (currentImageIndex + 1) % heroImages.length;
-            
-            let newImageUrl = `{{ asset('') }}${heroImages[currentImageIndex]}`;
-            newImageUrl = newImageUrl.replace(/([^:]\/)\/+/g, "$1"); // Bersihkan double slash
-
-            heroBanner.style.backgroundImage = `url('${newImageUrl}')`;
-        });
-
-    } else {
-
-        const heroBanner = document.getElementById('wahanaHeroBanner');
-        if (heroBanner) {
-            heroBanner.classList.remove('cursor-pointer');
-        }
-    }
-});
-</script>
+            // init
+            renderSlide(current);
+        })();
+        @endif
+    </script>
 
 </body>
 </html>
