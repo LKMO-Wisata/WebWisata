@@ -14,6 +14,9 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    // config/app.php
+    'price'    => env('APP_PRICE', 50000),
+    'currency' => env('APP_CURRENCY', 'IDR'),
 
     /*
     |--------------------------------------------------------------------------
