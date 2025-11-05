@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembelian tiket | Watersplash Park</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
-    
-    @include('layouts.navbar')
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
@@ -18,7 +17,6 @@
     <style>
         [x-cloak] { display: none !important; }
 
-        /* Sedikit kustomisasi flatpickr agar rapih di card */
         .flatpickr-calendar { background: transparent; box-shadow: none; border: none; padding: 0; }
         .flatpickr-day { border-radius: 9999px; height: 36px; width: 36px; line-height: 36px; margin: 3px 2px; }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: #05204a !important; color: #fff !important; border-color: #05204a !important; }
@@ -28,6 +26,8 @@
 </head>
 
 <body class="bg-gray-50" x-data="ticketApp()" x-init="initDatepicker($refs.calendarContainer)">
+
+  @include('layouts.navbar')
 
     <div class="container mx-auto p-4 md:p-10 max-w-7xl">
         <h1 class="text-4xl font-bold text-indigo-900 mb-8 text-center md:text-left">Tiket</h1>
@@ -54,15 +54,13 @@
                         class="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-center shadow-sm cursor-pointer"
                         :class="{ 'ring-2 ring-indigo-200 border-indigo-700': isCalendarOpen }">
                         
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-6 h-6 text-indigo-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75" />
-                            </svg>
-                            <div>
-                                <span class="text-sm text-gray-500">Tanggal Kedatangan</span>
-                                <p class="font-semibold text-gray-900" x-text="formatDateForDisplay(selectedDate)"></p>
-                            </div>
-                        </div>
+            <div class="flex items-center space-x-3"> 
+                <i class="fa-solid fa-calendar-days text-2xl text-indigo-700"></i>
+                <div>
+                 <span class="text-sm text-gray-500">Tanggal Kedatangan</span>
+                   <p class="font-semibold text-gray-900" x-text="formatDateForDisplay(selectedDate)"></p>
+                </div>
+            </div>
 
                         <svg x-show="!isCalendarOpen" class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -144,10 +142,8 @@
             <div class="lg:col-span-1 mt-8 lg:mt-0">
                 <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-6 sticky top-8">
                     <div class="flex items-center space-x-2 text-xl font-bold text-indigo-900 mb-4">
-                        <svg class="w-6 h-6 text-indigo-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75" />
-                        </svg>
-                        <span>Keranjang Belanja</span>
+                         <i class="fa-solid fa-cart-shopping w-6 h-6 text-indigo-900"></i>
+                         <span>Keranjang Belanja</span>
                     </div>
 
                     <p class="text-sm text-gray-600 mb-4">
@@ -159,11 +155,11 @@
                     </div>
 
                     <div x-show="cart.items.length > 0" x-cloak class="space-y-4">
-                        <template x-for="item in cart.items" :key="item.id">
+                        <template x-for="item in cart.items" :key="item.cartId">
                             <div class="pb-4 border-b border-gray-200 last:border-b-0">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="font-semibold text-gray-800" x-text="item.name"></span>
-                                    <button @click="removeFromCart(item.id)" class="text-red-500 hover:text-red-700">
+                                    <button @click="removeFromCart(item.cartId)" class="text-red-500 hover:text-red-700">
                                         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                                         </svg>
@@ -174,11 +170,11 @@
                                     <div>
                                         <span class="text-xs text-gray-500 d-block">Jumlah tiket Anda</span>
                                         <div class="flex items-center mt-1">
-                                            <button @click="updateQuantity(item.id, -1)" class="border rounded-l px-2 py-1 hover:bg-gray-100 text-gray-700 disabled:opacity-50" :disabled="item.quantity <= 1">
+                                            <button @click="updateQuantity(item.cartId, -1)" class="border rounded-l px-2 py-1 hover:bg-gray-100 text-gray-700 disabled:opacity-50" :disabled="item.quantity <= 1">
                                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" /></svg>
                                             </button>
                                             <span class="border-t border-b w-12 text-center py-1" x-text="item.quantity"></span>
-                                            <button @click="updateQuantity(item.id, 1)" class="border rounded-r px-2 py-1 hover:bg-gray-100 text-gray-700">
+                                            <button @click="updateQuantity(item.cartId, 1)" class="border rounded-r px-2 py-1 hover:bg-gray-100 text-gray-700">
                                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                                             </button>
                                         </div>
@@ -222,7 +218,6 @@ function ticketApp() {
             { id: 2, name: 'Anak-Anak', price: 30000 }
         ],
 
-        // tambahkan status fast track
         fastTrack: {
             1: false,
             2: false
@@ -263,42 +258,43 @@ function ticketApp() {
             });
         },
 
-        // saat klik "Tambah"
-        addToCart(productId) {
-            const product = this.products.find(p => p.id === productId);
-            if (!product) return;
+addToCart(productId) {
+    const product = this.products.find(p => p.id === productId);
+    if (!product) return;
 
-            // cek apakah fast track diaktifkan
-            const isFast = this.fastTrack[productId];
-            const price = product.price + (isFast ? 15000 : 0);
-            const name = product.name + (isFast ? " (Fast Track)" : "");
+    const isFast = this.fastTrack[productId];
+    const price = product.price + (isFast ? 15000 : 0);
+    const name = product.name + (isFast ? " (Fast Track)" : "");
 
-            let itemInCart = this.cart.items.find(
-                item => item.id === productId && item.fastTrack === isFast
-            );
+    const cartId = `${product.id}-${isFast ? 'fast' : 'normal'}`;
 
-            if (itemInCart) {
-                itemInCart.quantity++;
-            } else {
-                this.cart.items.push({
-                    id: product.id,
-                    name,
-                    price,
-                    fastTrack: isFast,
-                    quantity: 1
-                });
-            }
+    let itemInCart = this.cart.items.find(
+        item => item.cartId === cartId
+    );
+
+    if (itemInCart) {
+        itemInCart.quantity++;
+    } else {
+        this.cart.items.push({
+            cartId: cartId, 
+            id: product.id, 
+            name,
+            price,
+            fastTrack: isFast,
+            quantity: 1
+        });
+    }
+},
+
+        removeFromCart(cartId) { 
+         this.cart.items = this.cart.items.filter(item => item.cartId !== cartId); // <-- Filter pakai cartId
         },
-
-        removeFromCart(productId) {
-            this.cart.items = this.cart.items.filter(item => item.id !== productId);
-        },
-        updateQuantity(productId, amount) {
-            let itemInCart = this.cart.items.find(item => item.id === productId);
-            if (!itemInCart) return;
-            itemInCart.quantity += amount;
-            if (itemInCart.quantity < 1) itemInCart.quantity = 1;
-        },
+        updateQuantity(cartId, amount) { 
+        let itemInCart = this.cart.items.find(item => item.cartId === cartId); // <-- Cari pakai cartId
+          if (!itemInCart) return;
+          itemInCart.quantity += amount;
+          if (itemInCart.quantity < 1) itemInCart.quantity = 1;
+            },
         cartItemCount() {
             return this.cart.items.reduce((total, item) => total + item.quantity, 0);
         },

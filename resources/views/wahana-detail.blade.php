@@ -14,12 +14,15 @@
 
     @include('layouts.navbar')
 
-    <div class="relative h-[60vh] md:h-[70vh] bg-cover bg-center" style="background-image: url('{{ asset($wahana['gambar']) }}');">
-        <div class="absolute inset-0 bg-black bg-opacity-30"></div>
-        <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-gradient-to-t from-black via-black/70 to-transparent">
-            <h1 class="text-3xl md:text-5xl font-bold text-white text-center uppercase tracking-wider">{{ $wahana['nama'] }}</h1>
-        </div>
+    <div id="wahanaHeroBanner" 
+     class="relative h-[60vh] md:h-[70vh] bg-cover bg-center cursor-pointer transition-all duration-300" 
+     style="background-image: url('{{ asset($wahana['gambar'][0]) }}');">
+     
+    <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+    <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 bg-gradient-to-t from-black via-black/70 to-transparent">
+        <h1 class="text-3xl md:text-5xl font-bold text-white text-center uppercase tracking-wider">{{ $wahana['nama'] }}</h1>
     </div>
+</div>
 
     <section class="container mx-auto px-4 py-12 md:py-16">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
@@ -88,7 +91,6 @@
         <section class="bg-gray-100 py-16">
              <div class="container mx-auto px-4">
                  <h2 class="text-2xl font-bold text-center text-[#001B60] mb-10">Jelajahi Wahana Lainnya</h2>
-                 <p class="text-center text-gray-500 col-span-full">Tidak ada wahana lainnya untuk ditampilkan.</p>
              </div>
          </section>
     @endif
@@ -141,7 +143,7 @@
 
                     const safeSlug = item.slug.toString().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
                     const detailUrl = `/wahana/${safeSlug}`;
-                    let imageUrl = `{{ asset('') }}${item.gambar}`;
+                    let imageUrl = `{{ asset('') }}${item.gambar[0]}`;
                     imageUrl = imageUrl.replace(/([^:]\/)\/+/g, "$1");
 
                     containerOther.innerHTML += `
@@ -198,6 +200,36 @@
             }
         </script>
     @endif
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const heroImages = @json($wahana['gambar']);
+    
+    if (heroImages && heroImages.length > 1) {
+        
+        const heroBanner = document.getElementById('wahanaHeroBanner');
+        let currentImageIndex = 0;
+
+        heroBanner.addEventListener('click', function() {
+
+            currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+            
+            let newImageUrl = `{{ asset('') }}${heroImages[currentImageIndex]}`;
+            newImageUrl = newImageUrl.replace(/([^:]\/)\/+/g, "$1"); // Bersihkan double slash
+
+            heroBanner.style.backgroundImage = `url('${newImageUrl}')`;
+        });
+
+    } else {
+
+        const heroBanner = document.getElementById('wahanaHeroBanner');
+        if (heroBanner) {
+            heroBanner.classList.remove('cursor-pointer');
+        }
+    }
+});
+</script>
 
 </body>
 </html>

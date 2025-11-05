@@ -1,10 +1,7 @@
 <footer class="bg-[#000B58] text-[#FDEB9E] py-14">
     <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-6">
-
-            
-            <div>
-                
-                
+       
+            <div>           
                 <div class="flex items-start mb-5 space-x-4">
                     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 flex-shrink-0">
                         <rect width="48" height="48" rx="12" fill="#FDEB9E"/>
