@@ -79,11 +79,22 @@ Route::get('/fasilitas', function () use ($allFasilitas) {
 
 // Route Wahana Publik (Menggunakan data $allWahana)
 Route::get('/wahana', fn() => view('wahana'))->name('wahana');
+// routes/web.php
+
 Route::get('/wahana/{slug}', function ($slug) use ($allWahana) {
-    $wahanaDetail = collect($allWahana)->firstWhere(fn($w) => Str::slug($w['slug']) === $slug);
-    if (!$wahanaDetail) abort(404);
-    $otherWahana = collect($allWahana)->where(fn($w) => Str::slug($w['slug']) !== $slug)->take(3)->values();
-    return view('wahana-detail', compact('wahanaDetail', 'otherWahana'));
+    // PERBAIKAN: Langsung bandingkan $w['slug'] dengan $slug.
+    // Membandingkan "Bumper Cars" (data) === "Bumper Cars" (URL) -> BERHASIL
+    $wahanaDetail = collect($allWahana)->firstWhere(fn($w) => $w['slug'] === $slug); 
+    
+    if (!$wahanaDetail) abort(404); // Ini sudah benar
+    
+    // PERBAIKAN: Bagian "otherWahana" juga harus diperbaiki
+    $otherWahana = collect($allWahana)->where(fn($w) => $w['slug'] !== $slug)->values(); 
+    
+    return view('wahana-detail', [
+        'wahana' => $wahanaDetail, 
+        'others' => $otherWahana
+    ]);
 })->name('wahana.detail');
 
 
