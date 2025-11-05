@@ -72,7 +72,7 @@ Route::middleware([])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ADMIN: DIPERBAIKI SESUAI awahana.blade.php ANDA
+    | ADMIN ROUTES — DIPERBAIKI & DILENGKAPI
     |--------------------------------------------------------------------------
     */
 
@@ -107,13 +107,10 @@ Route::middleware([])->group(function () {
 
     // 5. EDIT WAHANA — DIPERBAIKI: slug ASLI (bukan Str::slug)
     Route::get('/admin/wahana/edit/{slug}', function ($slug) use ($allWahana) {
-        // Cari berdasarkan slug ASLI (seperti di awahana.blade.php)
         $wahana = collect($allWahana)->firstWhere('slug', $slug);
-
         if (!$wahana) {
             return redirect('/admin/wahana')->with('error', 'Wahana tidak ditemukan!');
         }
-
         return view('admin.editwahana', ['wahana' => $wahana]);
     })->name('admin.wahana.edit');
 
@@ -123,18 +120,42 @@ Route::middleware([])->group(function () {
             'nama_wahana' => 'required|string',
             'deskripsi' => 'required|string',
         ]);
-
         return redirect('/admin/wahana')
             ->with('success', "Wahana '{$request->nama_wahana}' berhasil diperbarui (simulasi).");
     })->name('admin.wahana.update');
 
-    // 7. LOGOUT
+    // 7. ATUR FASILITAS
+    Route::get('/admin/fasilitas', fn() => view('admin.fasilitas'))->name('admin.fasilitas');
+
+    // 8. ATUR TIKET (Statis + Simpan ke Session)
+    Route::get('/admin/tiket', fn() => view('admin.aturtiket'))->name('admin.tiket');
+
+    Route::post('/admin/tiket', function (Request $r) {
+        $r->validate([
+            'kategori' => 'required|in:dewasa,anak,gratis',
+            'harga' => 'required|numeric|min:0',
+            'fast_track' => 'required|numeric|min:0',
+            'deskripsi' => 'required|string|max:255',
+        ]);
+
+        $tiketData = session('tiket_data', []);
+        $tiketData[$r->kategori] = [
+            'harga' => (int) $r->harga,
+            'deskripsi' => $r->deskripsi,
+        ];
+        session(['tiket_data' => $tiketData]);
+        session(['fast_track' => (int) $r->fast_track]);
+
+        return back()->with('success', 'Data tiket berhasil diperbarui!');
+    })->name('admin.tiket.store');
+
+    // 9. LOGOUT
     Route::post('/admin/logout', function () {
         session()->forget('admin_logged_in');
         return redirect('/admin/login')->with('success', 'Logout berhasil.');
     })->name('admin.logout');
 
-    // 8. DEBUG: LANGSUNG MASUK
+    // 10. DEBUG: LANGSUNG MASUK (HANYA DEV)
     Route::get('/admin/debug', function () use ($allWahana) {
         session(['admin_logged_in' => true]);
         return redirect('/admin/wahana');
