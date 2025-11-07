@@ -8,6 +8,12 @@ use Illuminate\Validation\Rule;
 
 class FeedbackController extends Controller
 {
+
+    public function create()
+    {
+        // Ganti 'feedback.create' dengan lokasi file Blade Anda
+        return view('feedback'); 
+    }
     // Public — simpan feedback dari homepage
     public function store(Request $request)
     {

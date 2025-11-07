@@ -1,4 +1,4 @@
-<nav class="bg-[#000B58] text-[#FDEB9E] p-4 sticky top-0 z-50 shadow-lg">
+<nav class="bg-[#000B58] text-white p-4 sticky top-0 z-50 shadow-lg">
     <div class="container mx-auto flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-2">
@@ -35,6 +35,11 @@
     <a href="{{ url('/fasilitas') }}" class="flex items-center space-x-2 hover:text-red-400 transition">
         <i class="fa-solid fa-utensils w-5 h-5"></i> 
         <span>Fasilitas</span>
+    </a>
+
+    <a href="{{ url('/feedback') }}" class="flex items-center space-x-2 hover:text-red-400 transition">
+        <i class="fa-solid fa-comment w-5 h-5"></i> 
+        <span>Feedback</span>
     </a>
 </div> 
 </div>
