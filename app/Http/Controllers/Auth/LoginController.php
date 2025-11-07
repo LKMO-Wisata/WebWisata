@@ -42,7 +42,7 @@ class LoginController extends Controller
             return redirect()->intended(route('admin.wahana.index'))->with('success', 'Selamat datang kembali 👋');
         }
 
-        RateLimiter::hit($this->throttleKey($request), seconds: 60);
+        RateLimiter::hit($this->throttleKey($request), 60);
 
         throw ValidationException::withMessages([
             'email' => __('Email atau password salah.'),

@@ -6,16 +6,61 @@ use App\Mail\PaymentReceipt;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
+    /**
+     * ===== ADMIN: REKAP & PENGATURAN TIKET =====
+     */
+    public function index()
+    {
+        // Rekap order (yang terbaru dulu)
+        $orders = Order::latest()->paginate(15);
+
+        // Load harga tiket dinamis utk form admin
+        $tiket = $this->loadTicketPrices();
+
+        // Tampilkan halaman admin/aturtiket.blade.php
+        return view('admin.aturtiket', compact('orders', 'tiket'));
+    }
+
+    public function update(Request $request)
+    {
+        $data = $request->validate([
+            'harga_dewasa' => ['required', 'integer', 'min:0'],
+            'harga_anak'   => ['required', 'integer', 'min:0'],
+            'fast_track'   => ['required', 'integer', 'min:0'],
+        ], [], [
+            'harga_dewasa' => 'Harga Dewasa',
+            'harga_anak'   => 'Harga Anak-Anak',
+            'fast_track'   => 'Biaya Fast Track',
+        ]);
+
+        $this->saveTicketPrices([
+            'dewasa'     => (int) $data['harga_dewasa'],
+            'anak'       => (int) $data['harga_anak'],
+            'fast_track' => (int) $data['fast_track'],
+        ]);
+
+        return redirect()
+            ->route('admin.tiket.index')
+            ->with('success', 'Harga tiket berhasil diperbarui.');
+    }
+
+    /**
+     * ===== FRONT: FORM ORDER (tetap ke form-tiket.blade.php) =====
+     */
     public function create()
     {
         return view('form-tiket');
     }
 
+    /**
+     * ===== FRONT: CREATE ORDER (dipanggil via fetch/POST dari form) =====
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -27,26 +72,24 @@ class PaymentController extends Controller
             'paymentMethod.id'   => ['required','string', Rule::in(['bca_va','bni_va','bri_va','mandiri_va'])],
             'paymentMethod.name' => ['required','string','max:100'],
 
-            'orderItems'         => ['required','array','min:1'],
-            'orderItems.*.id'    => ['required','integer', Rule::in([1,2])], // 1=Dewasa, 2=Anak
+            'orderItems'             => ['required','array','min:1'],
+            'orderItems.*.id'        => ['required','integer', Rule::in([1,2])], // 1=Dewasa, 2=Anak
             'orderItems.*.quantity'  => ['required','integer','min:1'],
             'orderItems.*.fastTrack' => ['nullable','boolean'],
 
             'orderTotal'         => ['nullable','integer','min:0'],
         ]);
 
-        // Harga dinamis (cocokkan dengan FE di tiket.blade.php)
-        $PRICE_DEWASA = 35000;
-        $PRICE_ANAK   = 30000;
-        $PRICE_FAST   = 15000;
+        // Harga dinamis (ambil dari storage, bukan hardcode)
+        $prices = $this->loadTicketPrices();
 
         $computedSubtotal = 0;
         foreach ($data['orderItems'] as $it) {
             $base = match ($it['id']) {
-                1 => $PRICE_DEWASA,
-                2 => $PRICE_ANAK,
+                1 => $prices['dewasa'],
+                2 => $prices['anak'],
             };
-            $unit = $base + (!empty($it['fastTrack']) ? $PRICE_FAST : 0);
+            $unit = $base + (!empty($it['fastTrack']) ? $prices['fast_track'] : 0);
             $computedSubtotal += $unit * (int) $it['quantity'];
         }
         $computedTotal = $computedSubtotal;
@@ -77,7 +120,7 @@ class PaymentController extends Controller
             'payment_method' => $data['paymentMethod']['name'],
             'amount'         => $computedTotal,
             'currency'       => $currency,
-            'status'         => 'paid', // simulasi
+            'status'         => 'paid', // simulasi payment berhasil
             'meta'           => [
                 'ip'         => $request->ip(),
                 'agent'      => $request->userAgent(),
@@ -88,6 +131,7 @@ class PaymentController extends Controller
             ],
         ]);
 
+        // kirim email (queue)
         Mail::to($order->email)->queue(new PaymentReceipt($order));
 
         return response()->json([
@@ -95,9 +139,45 @@ class PaymentController extends Controller
         ]);
     }
 
+    /**
+     * ===== FRONT: HALAMAN SUCCESS (menampilkan ringkas order) =====
+     */
     public function success(string $orderCode)
     {
         $order = Order::where('order_code', $orderCode)->firstOrFail();
         return view('pembayaran', compact('order'));
+    }
+
+    /**
+     * ===== Helper load/save harga tiket (tanpa DB) =====
+     */
+    private function loadTicketPrices(): array
+    {
+        // file: storage/app/ticket.json
+        if (Storage::exists('ticket.json')) {
+            $data = json_decode(Storage::get('ticket.json'), true);
+            if (is_array($data)) {
+                return [
+                    'dewasa'     => (int) ($data['dewasa']     ?? 35000),
+                    'anak'       => (int) ($data['anak']       ?? 30000),
+                    'fast_track' => (int) ($data['fast_track'] ?? 15000),
+                ];
+            }
+        }
+        // default
+        return [
+            'dewasa'     => 35000,
+            'anak'       => 30000,
+            'fast_track' => 15000,
+        ];
+    }
+
+    private function saveTicketPrices(array $prices): void
+    {
+        Storage::put('ticket.json', json_encode([
+            'dewasa'     => (int) $prices['dewasa'],
+            'anak'       => (int) $prices['anak'],
+            'fast_track' => (int) $prices['fast_track'],
+        ], JSON_PRETTY_PRINT));
     }
 }
