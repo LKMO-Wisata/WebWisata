@@ -35,10 +35,17 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.fasilitas.index') }}" 
+                <a href="{{ route('admin.tiket.index') }}" 
                    class="flex items-center px-4 py-2.5 rounded-lg transition-colors duration-200
                           {{ request()->routeIs('admin.tiket*') ? 'bg-blue-700 text-white font-semibold shadow-lg' : 'text-gray-300 hover:bg-blue-700 hover:text-white' }}">
                     <span>Atur Tiket</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.feedback.index') }}" 
+                   class="flex items-center px-4 py-2.5 rounded-lg transition-colors duration-200
+                          {{ request()->routeIs('admin.feedback*') ? 'bg-blue-700 text-white font-semibold shadow-lg' : 'text-gray-300 hover:bg-blue-700 hover:text-white' }}">
+                    <span>Atur Feedback</span>
                 </a>
             </li>
         </ul>

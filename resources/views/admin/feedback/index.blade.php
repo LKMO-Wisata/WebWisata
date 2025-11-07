@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atur Tiket | Dashboard Admin</title>
+    <title>Feedback | Dashboard Admin</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,7 +11,6 @@
     <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 <body class="bg-gray-100">
-
 <div class="flex min-h-screen">
     @include('layouts.sidebar')
 
@@ -19,13 +18,10 @@
         <header class="bg-white shadow-md border-b border-gray-200 sticky top-0 z-30">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
                 <button id="sidebarOpenBtn" class="lg:hidden text-gray-500 hover:text-gray-900">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div class="text-sm text-gray-500">
-                    Dashboard / <span class="font-medium text-gray-800">Atur Tiket</span>
+                    Dashboard / <span class="font-medium text-gray-800">Feedback</span>
                 </div>
                 <div class="lg:hidden"></div>
             </div>
@@ -33,10 +29,10 @@
 
         <main class="flex-1 p-6 md:p-8">
             <div class="max-w-7xl mx-auto">
-                <h1 class="text-3xl font-bold text-gray-900 mb-6">Rekapitulasi Order</h1>
+                <h1 class="text-3xl font-bold text-gray-900 mb-6">Rekap Feedback Pengunjung</h1>
 
                 @if(session('success'))
-                    <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm" role="alert">
+                    <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md shadow-sm">
                         <p class="font-bold">Sukses!</p><p>{{ session('success') }}</p>
                     </div>
                 @endif
@@ -48,77 +44,64 @@
                             <tr>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">No</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Waktu</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Order Code</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nama</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Tanggal Kunjungan</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Metode</th>
-                                <th class="px-6 py-4 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">Total</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Rating</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Pesan</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Aksi</th>
                             </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                             @php
-                                $start = method_exists($orders, 'firstItem') ? ($orders->firstItem() ?? 1) : 1;
+                                $start = method_exists($feedback, 'firstItem') ? ($feedback->firstItem() ?? 1) : 1;
                             @endphp
-
-                            @forelse($orders as $order)
+                            @forelse($feedback as $item)
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
                                         {{ $start + $loop->index }}
                                     </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                        {{ optional($order->created_at)->format('d M Y H:i') }}
+                                    <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">
+                                        {{ optional($item->created_at)->format('d M Y H:i') }}
                                     </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-800">
-                                        {{ $order->order_code }}
+                                    <td class="px-6 py-4 text-sm text-gray-800">
+                                        {{ $item->email }}
                                     </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                        {{ $order->name }}
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        {{ $item->name ?: '—' }}
                                     </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {{ $order->email }}
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                        {{ data_get($order->meta, 'tanggal', '-') }}
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                                        {{ $order->payment_method }}
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
-                                        Rp {{ number_format((int)$order->amount, 0, ',', '.') }}
-                                    </td>
-
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold
-                                            {{ $order->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
-                                            {{ strtoupper($order->status) }}
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
+                                            {{ $item->rating >= 4 ? 'bg-green-100 text-green-700' : ($item->rating >= 2 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700') }}">
+                                            {{ $item->rating }} / 5
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-700 max-w-lg">
+                                        <div class="line-clamp-2" title="{{ $item->message }}">{{ $item->message }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <form action="{{ route('admin.feedback.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus feedback ini?');">
+                                            @csrf @method('DELETE')
+                                            <button class="border border-red-500 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">Belum ada pesanan.</td>
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">Belum ada feedback.</td>
                                 </tr>
                             @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    @if(method_exists($orders, 'links'))
+                    @if(method_exists($feedback, 'links'))
                         <div class="px-6 py-4 border-t border-gray-100">
-                            {{ $orders->links() }}
+                            {{ $feedback->links() }}
                         </div>
                     @endif
                 </div>
-
             </div>
         </main>
     </div>

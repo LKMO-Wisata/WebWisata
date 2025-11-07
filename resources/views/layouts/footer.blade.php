@@ -50,23 +50,24 @@
         <div>
             <h4 class="text-lg font-semibold mb-4">Wahana</h4>
             
-
+            {{-- PERUBAHAN DI BLOK PHP INI --}}
             @php
                 $footerWahana = [
-                    ['nama' => 'Bumper Cars',       'slug' => 'Bumper Cars'], 
-                    ['nama' => 'Drop Tower',       'slug' => 'Drop Tower'],
-                    ['nama' => 'Fantasy Voyage',   'slug' => 'Fantasy Voyage'],
-                    ['nama' => 'Mini Bumper Blast','slug' => 'Mini Bumper Blast'], 
-                    ['nama' => 'Mini Glowtopus Spin','slug' => 'Mini Glowtopus Spin'], 
-                    ['nama' => 'Pirate Ship',      'slug' => 'Pirate Ship'], 
-                    ['nama' => 'Rapid River Splash','slug' => 'Rapid River Splash'],
-                    ['nama' => 'Rush Rider',       'slug' => 'Rush Rider'],
-                    ['nama' => 'Sky Wheel',        'slug' => 'Sky Wheel'],
-                    ['nama' => 'Swan Lake Paddle', 'slug' => 'Swan Lake Paddle'],
-                    ['nama' => 'Trampland',        'slug' => 'Trampland'],
-                    ['nama' => 'Twinkle Carousel', 'slug' => 'Twinkle Carousel'], 
+                    ['nama' => 'Bumper Cars',       'slug' => 'bumper-cars'], 
+                    ['nama' => 'Drop Tower',       'slug' => 'drop-tower'],
+                    ['nama' => 'Fantasy Voyage',   'slug' => 'fantasy-voyage'],
+                    ['nama' => 'Mini Bumper Blast','slug' => 'mini-bumper-blast'], 
+                    ['nama' => 'Mini Glowtopus Spin','slug' => 'mini-glowtopus-spin'], 
+                    ['nama' => 'Pirate Ship',      'slug' => 'pirate-ship'], 
+                    ['nama' => 'Rapid River Splash','slug' => 'rapid-river-splash'],
+                    ['nama' => 'Rush Rider',       'slug' => 'rush-rider'],
+                    ['nama' => 'Sky Wheel',        'slug' => 'sky-wheel'],
+                    ['nama' => 'Swan Lake Paddle', 'slug' => 'swan-lake-paddle'],
+                    ['nama' => 'Trampland',        'slug' => 'trampland'],
+                    ['nama' => 'Twinkle Carousel', 'slug' => 'twinkle-carousel'], 
                 ];
             @endphp
+            {{-- AKHIR PERUBAHAN --}}
             
             <ul class="space-y-2 text-sm">
                 @foreach ($footerWahana as $item)
