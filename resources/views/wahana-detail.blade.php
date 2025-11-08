@@ -15,7 +15,7 @@
 
     {{-- HERO --}}
     @php
-        $heroUrl = $wahanaDetail->primary_photo_url ?? asset('img/no-image.png');
+        $heroUrl   = $wahanaDetail->primary_photo_url ?? asset('img/no-image.png');
         $allPhotos = $wahanaDetail->photo_urls ?? [];
     @endphp
     <div id="wahanaHeroBanner"
@@ -70,9 +70,11 @@
                         @foreach($allPhotos as $url)
                             <button type="button"
                                     class="block rounded overflow-hidden border border-gray-200 hover:ring-2 hover:ring-blue-400 transition"
-                                    onclick="swapHero('{{ $url }}')">
+                                    onclick="swapHero(@js($url))">
                                 <img src="{{ $url }}" alt="Foto {{ $wahanaDetail->nama }}"
-                                     class="w-full h-20 object-cover">
+                                     class="w-full h-20 object-cover"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.src='{{ asset('img/no-image.png') }}';">
                             </button>
                         @endforeach
                     </div>
@@ -84,15 +86,17 @@
 
     {{-- Wahana Lainnya --}}
     @php
-        // siapkan data slider: nama, slug, foto utama
-        $sliderItems = ($otherWahana ?? collect())->map(function($w){
-            return [
-                'nama'   => $w->nama,
-                'slug'   => $w->slug,
-                'foto'   => $w->primary_photo_url ?? asset('img/no-image.png'),
-            ];
-        })->values()->all();
-        $itemsPerSlide = 3;
+        // Build data slider: nama, url detail, foto utama (fallback aman)
+        $sliderItems = collect($otherWahana ?? [])
+            ->map(function($w) {
+                return [
+                    'nama' => $w->nama,
+                    'url'  => route('wahana.detail', $w->slug),
+                    'foto' => $w->primary_photo_url ?? asset('img/no-image.png'),
+                ];
+            })
+            ->values()
+            ->all();
     @endphp
 
     @if(!empty($sliderItems))
@@ -103,7 +107,7 @@
                 </h2>
                 <div class="flex justify-center items-center space-x-4">
                     <button id="prevBtnOther"
-                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
@@ -117,7 +121,7 @@
                     </div>
 
                     <button id="nextBtnOther"
-                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="p-2 rounded-full bg-white shadow-md text-gray-600 hover:bg-gray-100 hover:text-indigo-600 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
@@ -151,7 +155,8 @@
 
         function swapHero(url) {
             setHero(url);
-            heroIndex = photoList.indexOf(url) >= 0 ? photoList.indexOf(url) : heroIndex;
+            const idx = photoList.indexOf(url);
+            heroIndex = idx >= 0 ? idx : heroIndex;
         }
 
         if (heroBanner && Array.isArray(photoList) && photoList.length > 1) {
@@ -161,45 +166,54 @@
             });
         }
 
-        // ===== Slider "Wahana Lainnya" =====
+        // ===== Slider "Wahana Lainnya" (loop & tombol selalu aktif jika ada >1 item) =====
         @if(!empty($sliderItems))
         (function(){
-            const items = @json($sliderItems);
-            const per   = {{ $itemsPerSlide }};
-            const total = Math.ceil(items.length / per);
+            const original = @json($sliderItems);
+            const per = 3; // tampilkan 3 kartu per "halaman"
 
-            let current = 0;
+            // Jika item terlalu sedikit, gandakan supaya tetap bisa geser
+            let items = [...original];
+            if (items.length > 1 && items.length <= per) {
+                items = items.concat(original);
+            }
 
             const container = document.getElementById('wahanaContainerOther');
             const prevBtn   = document.getElementById('prevBtnOther');
             const nextBtn   = document.getElementById('nextBtnOther');
             const loading   = document.getElementById('loadingPlaceholder');
 
-            function routeDetail(slug) {
-                // Rute publik sekarang: /wahana/{slug}
-                return `{{ url('/wahana') }}/${slug}`;
-            }
+            // Minimal 1 halaman
+            let total = Math.max(1, Math.ceil(items.length / per));
+            let current = 0;
 
             function renderSlide(idx){
                 if (!container) return;
-
                 if (loading) loading.remove();
                 container.innerHTML = '';
 
-                const start = idx * per;
-                const subset = items.slice(start, start + per);
-
-                container.className = `grid grid-cols-1 sm:grid-cols-${Math.min(subset.length,2)} lg:grid-cols-${Math.min(subset.length, per)} gap-6 w-full max-w-5xl overflow-hidden`;
+                const start = (idx * per) % items.length;
+                // Ambil subset aman (membungkus)
+                const subset = [];
+                for (let i = 0; i < per; i++) {
+                    subset.push(items[(start + i) % items.length]);
+                }
 
                 subset.forEach(it => {
+                    const foto = it.foto || "{{ asset('img/no-image.png') }}";
+                    const nama = it.nama || 'Wahana';
+                    const url  = it.url || '#';
+
                     const card = `
                         <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition-shadow h-full flex flex-col">
-                            <img src="${it.foto}" alt="${it.nama}" class="h-40 w-full object-cover">
+                            <img src="${foto}" alt="${nama}" class="w-full h-44 object-cover"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='{{ asset('img/no-image.png') }}';">
                             <div class="p-4 flex-grow flex flex-col justify-between">
                                 <div>
-                                  <h4 class="text-sm font-semibold uppercase tracking-wider text-gray-700 mb-1">${it.nama}</h4>
+                                  <h4 class="text-sm font-semibold uppercase tracking-wider text-gray-700 mb-1">${nama}</h4>
                                 </div>
-                                <a href="${routeDetail(it.slug)}"
+                                <a href="${url}"
                                    class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline mt-2 self-start">
                                    Lihat Detail
                                 </a>
@@ -213,25 +227,25 @@
             }
 
             function updateNav(){
-                const canSlide = items.length > per;
-                if (prevBtn) prevBtn.disabled = !canSlide || current === 0;
-                if (nextBtn) nextBtn.disabled = !canSlide || current >= total - 1;
+                const canSlide = items.length > 1;
+                // Jangan disable tombol jika ada >1 item, biar tetap bisa loop
+                prevBtn?.classList.toggle('opacity-40', !canSlide);
+                nextBtn?.classList.toggle('opacity-40', !canSlide);
             }
 
             prevBtn?.addEventListener('click', () => {
-                if (current > 0) {
-                    current--;
-                    renderSlide(current);
-                }
-            });
-            nextBtn?.addEventListener('click', () => {
-                if (current < total - 1) {
-                    current++;
-                    renderSlide(current);
-                }
+                if (items.length <= 1) return;
+                current = (current - 1 + total) % total;
+                renderSlide(current);
             });
 
-            // init
+            nextBtn?.addEventListener('click', () => {
+                if (items.length <= 1) return;
+                current = (current + 1) % total;
+                renderSlide(current);
+            });
+
+            // Init
             renderSlide(current);
         })();
         @endif

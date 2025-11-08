@@ -6,6 +6,13 @@
     <title>Wahana Watersplash Park</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
+
+    {{-- Tambahan agar ikon tampil --}}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
 </head>
 <body class="bg-gray-50 font-sans text-gray-900">
 
@@ -32,16 +39,17 @@
                             alt="{{ $item->nama }}"
                             class="h-60 w-full object-cover"
                             loading="lazy"
+                            onerror="this.onerror=null;this.src='{{ asset('img/no-image.png') }}';"
                         >
                         <div class="bg-sky-100 p-4">
                             <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-800 mb-1">
                                 {{ $item->nama }}
                             </h3>
 
-                            {{-- Route detail menggunakan model binding {wahana:slug} --}}
                             <a href="{{ route('wahana.detail', $item->slug) }}"
-                               class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                               class="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">
                                 Lihat Detail
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </a>
                         </div>
                     </div>
@@ -64,5 +72,13 @@
 
     @include('layouts.footer')
 
+    {{-- Inisialisasi ikon Lucide setelah DOM siap --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        });
+    </script>
 </body>
 </html>

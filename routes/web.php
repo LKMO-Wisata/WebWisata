@@ -27,6 +27,7 @@ Route::get('/wahana/{slug}', [WahanaPublicController::class, 'show'])
     ->name('wahana.detail');
 
 // Feedback publik
+Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
 // Auth

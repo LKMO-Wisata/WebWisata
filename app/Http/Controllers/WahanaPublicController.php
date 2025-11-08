@@ -21,10 +21,11 @@ class WahanaPublicController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        // AMBIL LEBIH BANYAK DARI 3
         $other = Wahana::where('is_active', true)
             ->where('id', '!=', $wahana->id)
             ->inRandomOrder()
-            ->take(3)
+            ->take(12) // <-- sebelumnya 3
             ->get();
 
         return view('wahana-detail', [

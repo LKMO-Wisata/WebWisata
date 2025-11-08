@@ -65,7 +65,7 @@
                             </label>
                             {{-- Controller mengharapkan name="gambar[]" --}}
                             <input type="file" name="gambar[]" id="gambar" class="hidden" accept="image/*" multiple required>
-                            <p class="text-xs text-gray-500 mt-2">Format: jpg, jpeg, png, webp. Maks 4MB/file.</p>
+                            <p class="text-xs text-gray-500 mt-2">Format: jpg, jpeg, png, webp. Maks 4MB/file. Layout: 16:9</p>
                         </div>
                     </div>
 

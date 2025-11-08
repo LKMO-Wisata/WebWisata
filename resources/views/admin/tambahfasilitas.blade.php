@@ -61,7 +61,7 @@
                                 <input type="file" name="gambar" id="gambar" class="hidden"
                                        @change="photoPreview = URL.createObjectURL($event.target.files[0])"
                                        accept="image/*">
-                                <p class="text-xs text-gray-500 mt-2">Format: jpg, jpeg, png, webp. Maks 2MB.</p>
+                                <p class="text-xs text-gray-500 mt-2">Format: jpg, jpeg, png, webp. Maks 2MB. Layout: 16:9</p>
                             </div>
                         </div>
 
